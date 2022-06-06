@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!--先定义一个头布局来作为标题栏，将布局高度设置为actionBar的高度，背景色设置为colorPrimary
+    这里之所以要自己定义标题栏，是因为碎片中最好不要直接使用ActionBar或Toolbar,不然在复用的时候可能会
+    出现一些你不想看到的效果。
+    Action Bar是Android 3.0引入的导航栏功能，然而到5.0的时候，又推出了ToolBar
+    ToolBar是对ActionBar的升级，使用起来也基本是一样的。
+    只是因为ActionBar在实际使用过程中的各种问题，才推出了ToolBar来接替ActionBar
+    -->
+    <!--  存放省市县的数据将在这里显示出来 listView会在=给每个子项至今添加一条分割线，
+而如果使用RecyclerView想实现同样的功能则会比较麻烦，这里我们总是选择最优的实现发方案  -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
+
+        <!-- 用于显示标题内容
+         layout_centerInParent：相对于RelativeLayout来说，居中的含义
+         -->
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+        <!--执行返回操作
+
+        android:layout_alignParent 属性，只有在该布局的父布局也是RelativeLayout是才有用，此属性的含义为将控件边缘与父控件的边缘对齐
+        android:layout_alignParentLeft="true"  将控件的左边缘和父控件的左边缘对齐
+        android:layout_alignParentTop="true"   将控件的上边缘和父控件的上边缘对齐
+        android:layout_alignParentRight="true" 将控件的右边缘和父控件的右边缘对齐
+        android:layout_alignParentBottom="true" 将控件的底边缘和父控件的底边缘对齐
+
+        android:layout_centerInParent="true"  将控件置于父控件的中心位置
+        android:layout_centerHorizontal="true" 将控件置于水平方向的中心位置
+        android:layout_centerVertical="true"  将控件置于垂直方向的中心位置
+        靠右显示：用 android:layout_marginLeft，意思是距离左边框的距离；
+        靠左显示：用android:layout_marginRight，意思是距离右边框的距离。
+        -->
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/ic_launcher_background" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>
