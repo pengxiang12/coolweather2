@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <ImageView
+        android:id="@+id/bing_pic_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+      <!--android:scrollbars:自由控件已经超过了布局的大小就会滚动-->
+
+       <!--要实现ScrollView滚动条的隐藏，有两种方法:
+          1、是在XML的ScrollView布局中加入属性android:scrollbars="none"
+          2、在代码中获取ScrollView后进行scroll.setVerticalScrollBarEnabled(false);
+
+          android:overScrollMode="never":设置滑动到边缘时无效果模式
+       -->
+    <ScrollView
+        android:id="@+id/weather_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:overScrollMode="never">
+        <!-- 由于 scrollView的内部只允许存在一个直接子布局，因此这里又嵌套了一个垂直方向的LinearLayout
+        然后在LinearLayout中将刚才定义的所有布局逐个引入
+
+        android:fitsSystemWindows="true"：这个参数用来标题栏和和系统栏留出空间。
+        -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <!-- 标题，包含城市，和更新时间-->
+            <include layout="@layout/title"/>
+
+            <!--当前天气 天气相关信息-->
+            <include layout="@layout/now"/>
+
+            <!-- 未来天气 -->
+            <include layout="@layout/forecast"/>
+
+            <!--空气质量信息 pm25, aqi等相关信息-->
+            <include layout="@layout/aqi" />
+
+            <!-- 给出建议 -->
+            <include layout="@layout/suggestion"/>
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

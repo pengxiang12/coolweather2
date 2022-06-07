@@ -1,6 +1,7 @@
 package com.example.coolweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -114,6 +115,16 @@ public class ChooseAreaFragment extends Fragment {
                 selectedCity = mCityList.get(i);
                 // 查询县信息
                 queryCounties();
+            } else if (currentLevel == LEVEL_COUNTY) {
+                // 如果当前是县就要将天气给显示出来
+                // 从县的列表点击i位置的区信息
+                String weatherId = mCountryList.get(i).getWeatherId();
+                // 开启天气活动
+                Intent intent = new Intent(getContext(), WeatherActivity.class);
+                intent.putExtra("weather_id", weatherId);
+                startActivity(intent);
+                // 将当前活动给关闭了，因为开启了新的活动
+                getActivity().finish();
             }
         });
 
@@ -205,7 +216,7 @@ public class ChooseAreaFragment extends Fragment {
                             queryProvinces();
                         } else if ("city".equals(type)) {
                             queryCities();
-                        }else if ("country".equals(type)) {
+                        }else if ("county".equals(type)) {
                             queryCounties();
                         }
                     });
@@ -274,6 +285,14 @@ public class ChooseAreaFragment extends Fragment {
             int cityCode = selectedCity.getCityCode();
             String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
             queryFromServer(address, "county");
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
         }
     }
 }
