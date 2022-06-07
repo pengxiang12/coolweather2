@@ -9,47 +9,58 @@
         android:id="@+id/bing_pic_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
-      <!--android:scrollbars:自由控件已经超过了布局的大小就会滚动-->
+        android:scaleType="centerCrop" />
 
-       <!--要实现ScrollView滚动条的隐藏，有两种方法:
-          1、是在XML的ScrollView布局中加入属性android:scrollbars="none"
-          2、在代码中获取ScrollView后进行scroll.setVerticalScrollBarEnabled(false);
-
-          android:overScrollMode="never":设置滑动到边缘时无效果模式
-       -->
-    <ScrollView
-        android:id="@+id/weather_layout"
+    <!-- 添加刷新页面功能
+    SwipeRefreshLayout作为谷歌官方推荐的下拉刷新控件，同时简单而又不失优雅的风格，让许多app都使用了这一控件
+    -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:overScrollMode="never">
-        <!-- 由于 scrollView的内部只允许存在一个直接子布局，因此这里又嵌套了一个垂直方向的LinearLayout
-        然后在LinearLayout中将刚才定义的所有布局逐个引入
+        android:layout_height="match_parent">
 
-        android:fitsSystemWindows="true"：这个参数用来标题栏和和系统栏留出空间。
+
+        <!--android:scrollbars:自由控件已经超过了布局的大小就会滚动-->
+
+        <!--要实现ScrollView滚动条的隐藏，有两种方法:
+           1、是在XML的ScrollView布局中加入属性android:scrollbars="none"
+           2、在代码中获取ScrollView后进行scroll.setVerticalScrollBarEnabled(false);
+
+           android:overScrollMode="never":设置滑动到边缘时无效果模式
         -->
-        <LinearLayout
-            android:orientation="vertical"
+        <ScrollView
+            android:id="@+id/weather_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+            <!-- 由于 scrollView的内部只允许存在一个直接子布局，因此这里又嵌套了一个垂直方向的LinearLayout
+            然后在LinearLayout中将刚才定义的所有布局逐个引入
 
-            <!-- 标题，包含城市，和更新时间-->
-            <include layout="@layout/title"/>
+            android:fitsSystemWindows="true"：这个参数用来标题栏和和系统栏留出空间。
+            -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical">
 
-            <!--当前天气 天气相关信息-->
-            <include layout="@layout/now"/>
+                <!-- 标题，包含城市，和更新时间-->
+                <include layout="@layout/title" />
 
-            <!-- 未来天气 -->
-            <include layout="@layout/forecast"/>
+                <!--当前天气 天气相关信息-->
+                <include layout="@layout/now" />
 
-            <!--空气质量信息 pm25, aqi等相关信息-->
-            <include layout="@layout/aqi" />
+                <!-- 未来天气 -->
+                <include layout="@layout/forecast" />
 
-            <!-- 给出建议 -->
-            <include layout="@layout/suggestion"/>
-        </LinearLayout>
-    </ScrollView>
+                <!--空气质量信息 pm25, aqi等相关信息-->
+                <include layout="@layout/aqi" />
+
+                <!-- 给出建议 -->
+                <include layout="@layout/suggestion" />
+            </LinearLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </FrameLayout>

@@ -1,6 +1,7 @@
 package com.example.coolweather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -80,6 +81,9 @@ public class WeatherActivity extends AppCompatActivity {
     // 背景图片
     private ImageView mImageView;
 
+    // 刷新页面
+    private SwipeRefreshLayout mRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,17 +110,22 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText = findViewById(R.id.car_wash_text);
         sportText = findViewById(R.id.sport_text);
         mImageView = findViewById(R.id.bing_pic_img);
+        mRefreshLayout = findViewById(R.id.swipe_refresh);
+        // 设置下拉刷新进度条的颜色，这里我们就使用主题中的colorPrimary作为进度条的颜色了。
+        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         // 从缓存中获取数据
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String weather = preferences.getString("weather", null);
+        // 这里定义一个区的id
+        final String weatherId;
         if (weather != null) {
             // 有缓存时直接解析天气数据
             Weather weather1 = Utility.handleWeatherResponse(weather);
-
+            weatherId = weather1.basic.weatherId;
             showWeatherInfo(weather1);
         } else {
             // 缓存没有区服务器查询天气
-            String weatherId = getIntent().getStringExtra("weather_id");
+             weatherId = getIntent().getStringExtra("weather_id");
             // 如果缓存没有，需要将其ScrollView进行隐藏掉，不然空数据的界面看上去会很奇怪
             weatherLayout.setVisibility(View.INVISIBLE);
             // 从网络请求数据，并显示出来
@@ -131,6 +140,9 @@ public class WeatherActivity extends AppCompatActivity {
         } else {
             loadBingPic();
         }
+
+        // 刷新,就是给这个组件上添加刷新的按钮，给刷新事件添加一个监听器
+        mRefreshLayout.setOnRefreshListener(()-> requestWeather(weatherId));
     }
 
     private void loadBingPic() {
@@ -166,6 +178,8 @@ public class WeatherActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 // 如果失败就给出提示
                 Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+                // 作用就是刷新完毕之后，需要关闭刷新进度条，就是隐藏掉
+                mRefreshLayout.setRefreshing(false);
             }
 
             @Override
@@ -190,6 +204,8 @@ public class WeatherActivity extends AppCompatActivity {
                         // 给出提示 表示错误
                         Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                     }
+                    // 作用就是刷新完毕之后，需要关闭刷新进度条，就是隐藏掉
+                    mRefreshLayout.setRefreshing(false);
                 });
             }
         });
