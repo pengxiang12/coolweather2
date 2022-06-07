@@ -1,6 +1,8 @@
 package com.example.coolweather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.SharedPreferences;
@@ -11,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -82,7 +85,13 @@ public class WeatherActivity extends AppCompatActivity {
     private ImageView mImageView;
 
     // 刷新页面
-    private SwipeRefreshLayout mRefreshLayout;
+    SwipeRefreshLayout mRefreshLayout;
+
+    // 添加一个滑动菜单布局
+    DrawerLayout mDrawerLayout;
+
+    // 按钮组件
+    Button navButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +122,12 @@ public class WeatherActivity extends AppCompatActivity {
         mRefreshLayout = findViewById(R.id.swipe_refresh);
         // 设置下拉刷新进度条的颜色，这里我们就使用主题中的colorPrimary作为进度条的颜色了。
         mRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        navButton = findViewById(R.id.nav_button);
+        navButton.setOnClickListener( v-> {
+            // 这里是打开滑动菜单GravityCompat.START：表示最左侧
+            mDrawerLayout.openDrawer(GravityCompat.START);
+        });
         // 从缓存中获取数据
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String weather = preferences.getString("weather", null);
@@ -170,7 +185,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
-    private void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
         // 拼凑天气访问的地址
         String weatherUrl = URL + "?cityid=" + weatherId + "&key=" + KEY;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {

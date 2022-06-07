@@ -116,15 +116,28 @@ public class ChooseAreaFragment extends Fragment {
                 // 查询县信息
                 queryCounties();
             } else if (currentLevel == LEVEL_COUNTY) {
-                // 如果当前是县就要将天气给显示出来
                 // 从县的列表点击i位置的区信息
                 String weatherId = mCountryList.get(i).getWeatherId();
-                // 开启天气活动
-                Intent intent = new Intent(getContext(), WeatherActivity.class);
-                intent.putExtra("weather_id", weatherId);
-                startActivity(intent);
-                // 将当前活动给关闭了，因为开启了新的活动
-                getActivity().finish();
+                // 判断当前是不是在主活动中，如果是按照启动新的天气活动
+                if (getActivity() instanceof MainActivity) {
+                    // 如果当前是县就要将天气给显示出来
+
+                    // 开启天气活动
+                    Intent intent = new Intent(getContext(), WeatherActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    // 将当前活动给关闭了，因为开启了新的活动
+                    getActivity().finish();
+                } else if (getActivity() instanceof WeatherActivity) {
+                    // 如果当前是在天气活动中，那么就不需要重新开启天气活动
+                    WeatherActivity weatherActivity = (WeatherActivity)getActivity();
+                    // 这里是来关闭滑动菜单，因为不需要切换到另一个省市中
+                    weatherActivity.mDrawerLayout.closeDrawers();
+                    // 显示下拉框进度条
+                    weatherActivity.mRefreshLayout.setRefreshing(true);
+                    // 重新获取区的天气
+                    weatherActivity.requestWeather(weatherId);
+                }
             }
         });
 
