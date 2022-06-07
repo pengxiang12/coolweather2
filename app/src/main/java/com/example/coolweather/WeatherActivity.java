@@ -5,6 +5,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.coolweather.gson.Forecast;
 import com.example.coolweather.gson.Weather;
+import com.example.coolweather.service.AutoUpdateService;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.Utility;
 
@@ -229,65 +231,73 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void showWeatherInfo(Weather weather) {
-        // 拿到基础数据,城市和更新时间
-        String cityName = weather.basic.cityName;
-        String updateTime = weather.basic.update.updateTime;
-        // 将其修改添加进去
-        mTitleCity.setText(cityName);
-        mTitleUpdateTime.setText(updateTime);
+        if (weather != null && "ok".equals(weather.status)) {
+            // 拿到基础数据,城市和更新时间
+            String cityName = weather.basic.cityName;
+            String updateTime = weather.basic.update.updateTime;
+            // 将其修改添加进去
+            mTitleCity.setText(cityName);
+            mTitleUpdateTime.setText(updateTime);
 
 
-        // 当前天气设置 温度和天气状况
-        String temperature = weather.now.temperature + "℃";
-        String info = weather.now.mMore.info;
-        // 添加到ui中
-        mWeatherInfoText.setText(info);
-        mDegreeText.setText(temperature);
+            // 当前天气设置 温度和天气状况
+            String temperature = weather.now.temperature + "℃";
+            String info = weather.now.mMore.info;
+            // 添加到ui中
+            mWeatherInfoText.setText(info);
+            mDegreeText.setText(temperature);
 
-        // 未来天气情况
-        // 移除所有视图，主要是为了更新其他城市或者过了今天，当前是明天时间，那么未来天气就要跟着变，需要提前将其清空下面的视图
-        forecastLayout.removeAllViews();
-        // 变量添加到容器中
-        for (Forecast forecast : weather.mForecasts) {
-            // 第一个参数是：需要根据那个布局来构建视图的，第二个参数是这个布局所在的父视图，第三个参数
-            View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
-            // 日期
-            TextView data = view.findViewById(R.id.data_text);
-            // 天气状况
-            TextView futureInfo = view.findViewById(R.id.info_text);
-            // 最高气温
-            TextView maxTemperature = view.findViewById(R.id.max_text);
-            // 最低气温
-            TextView minTemperature = view.findViewById(R.id.min_text);
-            // 进行添加到ui中
-            data.setText(forecast.date);
-            futureInfo.setText(forecast.mMore.info);
-            maxTemperature.setText(forecast.mTemperature.max + "℃");
-            minTemperature.setText(forecast.mTemperature.min + "℃");
-            // 设置成功，然后视图添加到另一个布局下
-            forecastLayout.addView(view);
+            // 未来天气情况
+            // 移除所有视图，主要是为了更新其他城市或者过了今天，当前是明天时间，那么未来天气就要跟着变，需要提前将其清空下面的视图
+            forecastLayout.removeAllViews();
+            // 变量添加到容器中
+            for (Forecast forecast : weather.mForecasts) {
+                // 第一个参数是：需要根据那个布局来构建视图的，第二个参数是这个布局所在的父视图，第三个参数
+                View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
+                // 日期
+                TextView data = view.findViewById(R.id.data_text);
+                // 天气状况
+                TextView futureInfo = view.findViewById(R.id.info_text);
+                // 最高气温
+                TextView maxTemperature = view.findViewById(R.id.max_text);
+                // 最低气温
+                TextView minTemperature = view.findViewById(R.id.min_text);
+                // 进行添加到ui中
+                data.setText(forecast.date);
+                futureInfo.setText(forecast.mMore.info);
+                maxTemperature.setText(forecast.mTemperature.max + "℃");
+                minTemperature.setText(forecast.mTemperature.min + "℃");
+                // 设置成功，然后视图添加到另一个布局下
+                forecastLayout.addView(view);
+            }
+
+            // 空气质量设置
+            String aqi = weather.aqi.city.aqi;
+            String pm25 = weather.aqi.city.pm25;
+            String qlty = weather.aqi.city.qlty;
+            aqiText.setText(aqi);
+            pm25Text.setText(pm25);
+            qltyText.setText(qlty);
+
+            // 建议设置
+            // 洗车指数
+            String car = "洗车建议：" + weather.mSuggestion.cartWash.info;
+            // 舒适度指数
+            String comfort = "舒适度建议：" + weather.mSuggestion.mComfort.info;
+            // 运动指数
+            String sport = "运动建议：" + weather.mSuggestion.sport.info;
+            comfortText.setText(comfort);
+            carWashText.setText(car);
+            sportText.setText(sport);
+            // 设置可见
+            weatherLayout.setVisibility(View.VISIBLE);
+
+            // 激活服务
+            Intent intent = new Intent(this, AutoUpdateService.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
         }
-
-        // 空气质量设置
-        String aqi = weather.aqi.city.aqi;
-        String pm25 = weather.aqi.city.pm25;
-        String qlty = weather.aqi.city.qlty;
-        aqiText.setText(aqi);
-        pm25Text.setText(pm25);
-        qltyText.setText(qlty);
-
-        // 建议设置
-        // 洗车指数
-        String car = "洗车建议：" + weather.mSuggestion.cartWash.info;
-        // 舒适度指数
-        String comfort = "舒适度建议："  + weather.mSuggestion.mComfort.info;
-        // 运动指数
-        String sport = "运动建议：" + weather.mSuggestion.sport.info;
-        comfortText.setText(comfort);
-        carWashText.setText(car);
-        sportText.setText(sport);
-       // 设置可见
-        weatherLayout.setVisibility(View.VISIBLE);
     }
 
 
